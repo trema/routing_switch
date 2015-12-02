@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.4.1 (12/2/2015)
+### Bugs fixed
+* Fix LoadError
+
+
 ## 0.4.0 (12/2/2015)
 ### Changes
 * Trema 0.8.4.
