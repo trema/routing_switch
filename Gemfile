@@ -5,7 +5,7 @@ gem 'grape'
 gem 'trema'
 
 group :development, :test do
-  gem 'aruba', '~> 0.6.2', require: false
+  gem 'aruba', require: false
   gem 'cucumber', require: false
   gem 'flay', require: false
   gem 'flog', require: false
