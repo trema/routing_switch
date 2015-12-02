@@ -1,3 +1,5 @@
+$LOAD_PATH.unshift File.join(__dir__, '../vendor/topology/lib')
+
 require 'forwardable'
 require 'optparse'
 require 'path_manager'
