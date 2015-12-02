@@ -3,7 +3,7 @@
 ## develop (unreleased)
 
 
-## 0.4.0pre1 (12/2/2015)
+## 0.4.0 (12/2/2015)
 ### Changes
 * Trema 0.8.4.
 
