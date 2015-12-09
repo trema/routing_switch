@@ -7,12 +7,18 @@ class TopologyController < Trema::Controller
 
   attr_reader :topology
 
-  def start(args = [])
+  def initialize(&block)
+    super
     @command_line = CommandLine.new(logger)
-    @command_line.parse(args)
     @topology = Topology.new
+    block.call self
+  end
+
+  def start(args = [])
+    @command_line.parse(args)
     @topology.add_observer @command_line.view
     logger.info "Topology started (#{@command_line.view})."
+    self
   end
 
   def add_observer(observer)
