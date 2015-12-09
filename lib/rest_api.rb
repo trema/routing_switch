@@ -1,5 +1,7 @@
 require 'grape'
-require 'slice'
+require 'port'
+require 'slice_exceptions'
+require 'slice_extensions'
 require 'trema'
 
 module DRb
@@ -11,21 +13,26 @@ module DRb
   end
 end
 
+# Remote Slice class proxy
+class Slice
+  def self.method_missing(method, *args, &block)
+    socket_dir = if FileTest.exists?('RoutingSwitch.ctl')
+                   '.'
+                 else
+                   ENV['TREMA_SOCKET_DIR'] || Trema::DEFAULT_SOCKET_DIR
+                 end
+    remote_klass =
+      Trema.trema_process('RoutingSwitch', socket_dir).controller.slice
+    remote_klass.__send__(method, *args, &block)
+  end
+end
+
 # REST API of SliceManager
 # rubocop:disable ClassLength
 class RestApi < Grape::API
   format :json
 
   helpers do
-    def slice
-      socket_dir = if FileTest.exists?('RoutingSwitch.ctl')
-                     '.'
-                   else
-                     ENV['TREMA_SOCKET_DIR'] || Trema::DEFAULT_SOCKET_DIR
-                   end
-      Trema.trema_process('RoutingSwitch', socket_dir).controller.slice
-    end
-
     def rest_api
       yield
     rescue Slice::NotFoundError => not_found_error
@@ -40,7 +47,7 @@ class RestApi < Grape::API
     requires :name, type: String, desc: 'Slice ID.'
   end
   post :slices do
-    rest_api { slice.create params[:name] }
+    rest_api { Slice.create params[:name] }
   end
 
   desc 'Deletes a slice.'
@@ -48,12 +55,12 @@ class RestApi < Grape::API
     requires :name, type: String, desc: 'Slice ID.'
   end
   delete :slices do
-    rest_api { slice.destroy params[:name] }
+    rest_api { Slice.destroy params[:name] }
   end
 
   desc 'Lists slices.'
   get :slices do
-    rest_api { slice.all }
+    rest_api { Slice.all }
   end
 
   desc 'Shows a slice.'
@@ -61,7 +68,7 @@ class RestApi < Grape::API
     requires :slice_id, type: String, desc: 'Slice ID.'
   end
   get 'slices/:slice_id' do
-    rest_api { slice.find_by!(name: params[:slice_id]) }
+    rest_api { Slice.find_by!(name: params[:slice_id]) }
   end
 
   desc 'Adds a port to a slice.'
@@ -72,7 +79,7 @@ class RestApi < Grape::API
   end
   post 'slices/:slice_id/ports' do
     rest_api do
-      slice.find_by!(name: params[:slice_id]).
+      Slice.find_by!(name: params[:slice_id]).
         add_port(dpid: params[:dpid], port_no: params[:port_no])
     end
   end
@@ -85,7 +92,7 @@ class RestApi < Grape::API
   end
   delete 'slices/:slice_id/ports' do
     rest_api do
-      slice.find_by!(name: params[:slice_id]).
+      Slice.find_by!(name: params[:slice_id]).
         delete_port(dpid: params[:dpid], port_no: params[:port_no])
     end
   end
@@ -95,7 +102,7 @@ class RestApi < Grape::API
     requires :slice_id, type: String, desc: 'Slice ID.'
   end
   get 'slices/:slice_id/ports' do
-    rest_api { slice.find_by!(name: params[:slice_id]).ports }
+    rest_api { Slice.find_by!(name: params[:slice_id]).ports }
   end
 
   desc 'Shows a port.'
@@ -105,7 +112,7 @@ class RestApi < Grape::API
   end
   get 'slices/:slice_id/ports/:port_id' do
     rest_api do
-      slice.find_by!(name: params[:slice_id]).
+      Slice.find_by!(name: params[:slice_id]).
         find_port(Port.parse(params[:port_id]))
     end
   end
@@ -118,7 +125,7 @@ class RestApi < Grape::API
   end
   post '/slices/:slice_id/ports/:port_id/mac_addresses' do
     rest_api do
-      slice.find_by!(name: params[:slice_id]).
+      Slice.find_by!(name: params[:slice_id]).
         add_mac_address(params[:name], Port.parse(params[:port_id]))
     end
   end
@@ -131,7 +138,7 @@ class RestApi < Grape::API
   end
   delete '/slices/:slice_id/ports/:port_id/mac_addresses' do
     rest_api do
-      slice.find_by!(name: params[:slice_id]).
+      Slice.find_by!(name: params[:slice_id]).
         delete_mac_address(params[:name], Port.parse(params[:port_id]))
     end
   end
@@ -143,7 +150,7 @@ class RestApi < Grape::API
   end
   get 'slices/:slice_id/ports/:port_id/mac_addresses' do
     rest_api do
-      slice.find_by!(name: params[:slice_id]).
+      Slice.find_by!(name: params[:slice_id]).
         mac_addresses(Port.parse(params[:port_id]))
     end
   end
@@ -156,7 +163,7 @@ class RestApi < Grape::API
   end
   get 'slices/:slice_id/ports/:port_id/mac_addresses/:mac_address_id' do
     rest_api do
-      slice.find_by!(name: params[:slice_id]).
+      Slice.find_by!(name: params[:slice_id]).
         find_mac_address(Port.parse(params[:port_id]), params[:mac_address_id])
     end
   end
