@@ -1,6 +1,6 @@
 $LOAD_PATH.unshift File.join(__dir__, '../vendor/topology/lib')
 
-require 'forwardable'
+require 'active_support/core_ext/module/delegation'
 require 'optparse'
 require 'path_manager'
 require 'slice_manager'
@@ -8,8 +8,6 @@ require 'topology_controller'
 
 # L2 routing switch
 class RoutingSwitch < Trema::Controller
-  extend Forwardable
-
   # Command-line options of RoutingSwitch
   class Options
     attr_reader :slicing
@@ -23,7 +21,7 @@ class RoutingSwitch < Trema::Controller
 
   timer_event :flood_lldp_frames, interval: 1.sec
 
-  def_delegators :@topology, :flood_lldp_frames
+  delegate :flood_lldp_frames, to: :@topology
 
   def slice
     fail 'Slicing is disabled.' unless @options.slicing
@@ -37,10 +35,10 @@ class RoutingSwitch < Trema::Controller
     logger.info 'Routing Switch started.'
   end
 
-  def_delegators :@topology, :switch_ready
-  def_delegators :@topology, :features_reply
-  def_delegators :@topology, :switch_disconnected
-  def_delegators :@topology, :port_modify
+  delegate :switch_ready, to: :@topology
+  delegate :features_reply, to: :@topology
+  delegate :switch_disconnected, to: :@topology
+  delegate :port_modify, to: :@topology
 
   def packet_in(dpid, packet_in)
     @topology.packet_in(dpid, packet_in)
