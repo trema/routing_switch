@@ -11,7 +11,7 @@ module DRb
   end
 end
 
-# REST API of SliceableSwitch
+# REST API of SliceManager
 # rubocop:disable ClassLength
 class RestApi < Grape::API
   format :json

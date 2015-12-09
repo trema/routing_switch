@@ -7,7 +7,7 @@ Bundler.setup :default
 
 require 'gli'
 require 'trema'
-require 'sliceable_switch'
+require 'slice_manager'
 
 # slice command
 module SliceApp

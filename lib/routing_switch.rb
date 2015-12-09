@@ -3,7 +3,7 @@ $LOAD_PATH.unshift File.join(__dir__, '../vendor/topology/lib')
 require 'forwardable'
 require 'optparse'
 require 'path_manager'
-require 'sliceable_switch'
+require 'slice_manager'
 require 'topology_controller'
 
 # L2 routing switch
@@ -53,7 +53,7 @@ class RoutingSwitch < Trema::Controller
 
   def start_path_manager
     fail unless @options
-    (@options.slicing ? SliceableSwitch : PathManager).new.tap(&:start)
+    (@options.slicing ? SliceManager : PathManager).new.tap(&:start)
   end
 
   def start_topology
