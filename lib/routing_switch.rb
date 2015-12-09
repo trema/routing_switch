@@ -30,8 +30,6 @@ class RoutingSwitch < Trema::Controller
     Slice
   end
 
-  # @!group Trema event handlers
-
   def start(args)
     @options = Options.new(args)
     @path_manager = start_path_manager
@@ -44,9 +42,9 @@ class RoutingSwitch < Trema::Controller
   def_delegators :@topology, :switch_disconnected
   def_delegators :@topology, :port_modify
 
-  def packet_in(dpid, message)
-    @topology.packet_in(dpid, message)
-    @path_manager.packet_in(dpid, message) unless message.lldp?
+  def packet_in(dpid, packet_in)
+    @topology.packet_in(dpid, packet_in)
+    @path_manager.packet_in(dpid, packet_in) unless packet_in.lldp?
   end
 
   private
