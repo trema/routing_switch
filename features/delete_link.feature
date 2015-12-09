@@ -67,7 +67,7 @@ Feature: Update shortest paths
     Then the number of packets received by "host2" should be:
       |      source | #packets |
       | 192.168.0.1 |        2 |
-    Then the switch "switch1" has 2 flow entries
-    And the switch "switch2" has 2 flow entries
-    And the switch "switch3" has 2 flow entries
-    And the switch "switch4" has 2 flow entries
+    Then the switch "switch1" has 1 flow entry
+    And the switch "switch2" has 1 flow entry
+    And the switch "switch3" has 1 flow entry
+    And the switch "switch4" has 1 flow entry

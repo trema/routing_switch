@@ -25,9 +25,9 @@ class RoutingSwitch < Trema::Controller
 
   def_delegators :@topology, :flood_lldp_frames
 
-  def sliceable_switch
+  def slice
     fail 'Slicing is disabled.' unless @options.slicing
-    @path_manager
+    Slice
   end
 
   # @!group Trema event handlers

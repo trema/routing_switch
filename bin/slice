@@ -23,8 +23,7 @@ module SliceApp
       fail 'slice name is required.' if args.empty?
       Trema.trema_process('RoutingSwitch', options[:socket_dir]).
         controller.
-        sliceable_switch.
-        add_slice(args.first)
+        slice.create(args.first)
     end
   end
 
@@ -37,9 +36,7 @@ module SliceApp
     c.action do |_global_options, options, args|
       fail 'slice name is required.' if args.empty?
       Trema.trema_process('RoutingSwitch', options[:socket_dir]).
-        controller.
-        sliceable_switch.
-        delete_slice(args.first)
+        controller.slice.destroy(args.first)
     end
   end
 
@@ -50,13 +47,10 @@ module SliceApp
 
     c.action do |_global_options, options, _args|
       DRb.start_service
-      slices = Trema.trema_process('RoutingSwitch', options[:socket_dir]).
-               controller.
-               sliceable_switch.
-               slices
-      slices.each_pair do |slice, ports|
+      controller = Trema.trema_process('RoutingSwitch', options[:socket_dir]).controller
+      controller.slice.all.each do |slice|
         puts slice
-        ports.each do |port, mac_addresses|
+        slice.each do |port, mac_addresses|
           puts "  #{port.name}"
           mac_addresses.each do |each|
             puts "    #{each}"
@@ -76,15 +70,12 @@ module SliceApp
     c.flag [:S, :socket_dir], default_value: Trema::DEFAULT_SOCKET_DIR
 
     c.action do |_global_options, options, _args|
-      DRb.start_service
       fail '--port option is mandatory.' unless options[:port]
       fail '--slice option is mandatory.' unless options[:slice]
-      port = Slice::Port.parse(options[:port])
-      Trema.trema_process('RoutingSwitch', options[:socket_dir]).
-        controller.
-        sliceable_switch.
-        add_port_to_slice(options[:slice],
-                          dpid: port[:dpid], port_no: port[:port_no])
+      port = Port.parse(options[:port])
+      slice = Trema.trema_process('RoutingSwitch', options[:socket_dir]).
+              controller.slice.find_by!(name: options[:slice])
+      slice.add_port(dpid: port[:dpid], port_no: port[:port_no])
     end
   end
 
@@ -98,15 +89,14 @@ module SliceApp
     c.flag [:S, :socket_dir], default_value: Trema::DEFAULT_SOCKET_DIR
 
     c.action do |_global_options, options, _args|
-      DRb.start_service
       fail '--port option is mandatory.' unless options[:port]
       fail '--slice option is mandatory.' unless options[:slice]
-      port = Slice::Port.parse(options[:port])
+      port = Port.parse(options[:port])
       Trema.trema_process('RoutingSwitch', options[:socket_dir]).
         controller.
-        sliceable_switch.
-        delete_port_from_slice(options[:slice],
-                               dpid: port[:dpid], port_no: port[:port_no])
+        slice.
+        find_by!(name: options[:slice]).
+        delete_port(dpid: port[:dpid], port_no: port[:port_no])
     end
   end
 
@@ -122,15 +112,14 @@ module SliceApp
     c.flag [:S, :socket_dir], default_value: Trema::DEFAULT_SOCKET_DIR
 
     c.action do |_global_options, options, _args|
-      DRb.start_service
       fail '--mac option is mandatory.' unless options[:mac]
       fail '--port option is mandatory.' unless options[:port]
       fail '--slice option is mandatory.' unless options[:slice]
-      port = Slice::Port.parse(options[:port])
+      port = Port.parse(options[:port])
       Trema.trema_process('RoutingSwitch', options[:socket_dir]).
-        controller.
-        sliceable_switch.
-        add_mac_address(options[:slice], options[:mac],
+        controller.slice.
+        find_by!(name: options[:slice]).
+        add_mac_address(options[:mac],
                         dpid: port[:dpid], port_no: port[:port_no])
     end
   end
@@ -150,13 +139,18 @@ module SliceApp
       fail '--mac option is mandatory.' unless options[:mac]
       fail '--port option is mandatory.' unless options[:port]
       fail '--slice option is mandatory.' unless options[:slice]
-      port = Slice::Port.parse(options[:port])
+      port = Port.parse(options[:port])
       Trema.trema_process('RoutingSwitch', options[:socket_dir]).
         controller.
-        sliceable_switch.
-        delete_mac_address(options[:slice], options[:mac],
+        slice.
+        find_by!(name: options[:slice]).
+        delete_mac_address(options[:mac],
                            dpid: port[:dpid], port_no: port[:port_no])
     end
+  end
+
+  on_error do |e|
+    fail e
   end
 
   exit run(ARGV)

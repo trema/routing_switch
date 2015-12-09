@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'activesupport'
 gem 'bundler'
 gem 'grape'
 gem 'trema'
@@ -14,6 +15,7 @@ group :development, :test do
   gem 'guard-rspec', require: false
   gem 'guard-rubocop', require: false
   gem 'pry', require: false
+  gem 'pry-byebug', require: false
   gem 'pry-doc', require: false
   gem 'rack-test', require: false
   gem 'rake', require: false

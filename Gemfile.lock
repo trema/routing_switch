@@ -29,6 +29,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     bindata (2.1.0)
     builder (3.2.2)
+    byebug (8.2.1)
     childprocess (0.5.8)
       ffi (~> 1.0, >= 1.0.11)
     codeclimate-engine-rb (0.1.0)
@@ -153,6 +154,9 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    pry-byebug (3.3.0)
+      byebug (~> 8.0)
+      pry (~> 0.10)
     pry-doc (0.8.0)
       pry (~> 0.9)
       yard (~> 0.8)
@@ -252,6 +256,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport
   aruba
   bundler
   codeclimate-test-reporter
@@ -266,6 +271,7 @@ DEPENDENCIES
   guard-rubocop
   inch
   pry
+  pry-byebug
   pry-doc
   rack-test
   rake
