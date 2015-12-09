@@ -7,7 +7,7 @@ class TopologyController < Trema::Controller
 
   attr_reader :topology
 
-  def start(args)
+  def start(args = [])
     @command_line = CommandLine.new(logger)
     @command_line.parse(args)
     @topology = Topology.new

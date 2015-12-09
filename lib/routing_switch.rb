@@ -59,7 +59,7 @@ class RoutingSwitch < Trema::Controller
   def start_topology
     fail unless @path_manager
     TopologyController.new.tap do |topology|
-      topology.start []
+      topology.start
       topology.add_observer @path_manager
     end
   end
