@@ -7,6 +7,7 @@ class Port
 
   attr_reader :dpid
   attr_reader :port_no
+  alias_method :number, :port_no
 
   def initialize(attrs)
     @attrs = attrs
