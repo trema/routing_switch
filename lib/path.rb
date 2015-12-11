@@ -1,4 +1,5 @@
 require 'active_support/core_ext/class/attribute_accessors'
+require 'slice'
 require 'trema'
 
 # List of shortest-path flow entries.
@@ -17,7 +18,13 @@ class Path < Trema::Controller
     all.select { |each| block.call(each) }
   end
 
-  attr_accessor :slice
+  attr_reader :slice
+
+  def slice=(name)
+    Slice.find_by!(name: name)
+    @slice = name
+  end
+
   attr_reader :packet_in
 
   def save(full_path, packet_in)

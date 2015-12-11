@@ -20,11 +20,10 @@ class Slice
     new(name).tap { |slice| all << slice }
   end
 
+  # This method smells of :reek:NestedIterators but ignores them
   def self.find_by(queries)
     queries.inject(all) do |memo, (attr, value)|
-      memo.find_all do |slice|
-        slice.__send__(attr) == value
-      end
+      memo.find_all { |slice| slice.__send__(attr) == value }
     end.first
   end
 

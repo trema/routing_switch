@@ -11,8 +11,10 @@ class SliceManager < PathManager
   end
 
   def packet_in(_dpid, packet_in)
-    slice = find_slice(packet_in.slice_source,
-                       packet_in.slice_destination(@graph))
+    slice = Slice.find do |each|
+      each.member?(packet_in.slice_source) &&
+      each.member?(packet_in.slice_destination(@graph))
+    end
     if slice
       path = maybe_create_shortest_path_in_slice(slice.name, packet_in)
       packet_out_to_destination(packet_in, path.out_port) if path
@@ -22,10 +24,6 @@ class SliceManager < PathManager
   end
 
   private
-
-  def find_slice(source, destination)
-    Slice.find { |each| each.member?(source) && each.member?(destination) }
-  end
 
   def maybe_create_shortest_path_in_slice(slice_name, packet_in)
     path = maybe_create_shortest_path(packet_in)
