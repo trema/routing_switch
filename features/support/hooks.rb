@@ -4,7 +4,7 @@ Before('@sudo') do
 end
 
 After('@sudo') do
-  run 'trema killall RoutingSwitch'
+  run 'trema killall --all -S.'
   sleep 10
 end
 
@@ -14,7 +14,7 @@ Before('@rest_api') do
 end
 
 After('@rest_api') do
-  run 'trema killall RoutingSwitch'
+  run 'trema killall --all -S.'
   sleep 10
 end
 
