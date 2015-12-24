@@ -29,7 +29,12 @@ end
 Given(/^I trema run "([^"]*)" with args "([^"]*)"$/) do |controller, args|
   controller_path = File.join('..', '..', controller)
   step %(I successfully run `trema run #{controller_path} #{args}`)
-  step %(I successfully run `sleep 10`)
+  step %(sleep 10)
+end
+
+When(/^I trema run "([^"]*)" interactively$/) do |controller_file|
+  controller_path = File.join('..', '..', controller_file)
+  step %(I run `trema run #{controller_path}` interactively)
 end
 
 # rubocop:disable LineLength
@@ -46,7 +51,7 @@ When(/^I trema run "([^"]*)"( interactively)? with the configuration "([^"]*)"$/
   else
     step %(I successfully run `trema run #{run_arguments} -d`)
   end
-  step %(I successfully run `sleep 10`)
+  step %(sleep 10)
 end
 # rubocop:enable LineLength
 
@@ -56,7 +61,7 @@ end
 
 When(/^I delete the link between "([^"]*)" and "([^"]*)"$/) do |peer1, peer2|
   step %(I successfully run `trema delete_link #{peer1} #{peer2}`)
-  step %(I successfully run `sleep 3`)
+  step %(sleep 3)
 end
 
 # rubocop:disable LineLength
@@ -70,4 +75,8 @@ end
 
 Then(/^the command returns immediately$/) do
   # noop
+end
+
+When(/^sleep (\d+)$/) do |time|
+  sleep time.to_i
 end
