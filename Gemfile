@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'activesupport'
 gem 'bundler'
 gem 'grape'
+gem 'phut', github: 'trema/phut', branch: 'develop'
 gem 'trema'
 
 group :development, :test do
